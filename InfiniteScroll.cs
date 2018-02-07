@@ -46,7 +46,6 @@ public class InfiniteScroll : MonoBehaviour, IDropHandler {
 	private RectTransform _content;
 	private RectTransform[] _rects;
 	private GameObject[] _views;
-	private int[] _dataIndexes;
 	private bool _isCanLoadUp;
 	private bool _isCanLoadDown;
 	private int _previousPosition;
@@ -60,24 +59,43 @@ public class InfiniteScroll : MonoBehaviour, IDropHandler {
 		CreateLabels ();
 	}
 
-	void Update () {
-		if (_count == 0) return;
+	void Update () {	
+		if (_count == 0)
+			return;
 		float _topPosition = _content.anchoredPosition.y - spacing;
-		int offset = Mathf.FloorToInt(_topPosition / (height + spacing));
-		for (int i = offset; i < offset +  _views.Length; i++)
-		{
-			int index = i % _views.Length;
-			if (i < 0 || i > _count - 1) continue;
-			
-			Vector2 pos = _rects[index].anchoredPosition;
-			pos.y = -(top + i * spacing + i  * height);
-			_rects[index].anchoredPosition = pos;
-			if(_dataIndexes[index] != i)
-			{
-				_dataIndexes[index] = i;
-				FillItem(i, _views[index]);
+		if (_topPosition <= 0f && _rects[0].anchoredPosition.y < -top-10f) {
+			InitData (_count);
+			return;
+		}
+		if (_topPosition < 0f) 
+			return;
+		int position = Mathf.FloorToInt (_topPosition / (height + spacing));
+		if (_previousPosition == position)
+			return;
+		if (position > _previousPosition) { 
+			if (position - _previousPosition > 1)
+				position = _previousPosition + 1;
+			int newPosition = position % _views.Length;
+			newPosition--;
+			if (newPosition < 0)
+				newPosition = _views.Length - 1;
+			int index = position + _views.Length - 1;
+			if (index < _count) {
+				Vector2 pos = _rects[newPosition].anchoredPosition;
+				pos.y = -(top + index * spacing + index * height);
+				_rects[newPosition].anchoredPosition = pos;
+				FillItem (index, _views[newPosition]);
 			}
-		}		
+		} else { 
+			if (_previousPosition - position > 1)
+				position = _previousPosition - 1;
+			int newIndex = position % _views.Length;
+			Vector2 pos = _rects[newIndex].anchoredPosition;
+			pos.y = -(top + position * spacing + position * height);
+			_rects[newIndex].anchoredPosition = pos;
+			FillItem (position, _views[newIndex]);
+		}
+		_previousPosition = position;			
 	}
 		
 	void OnScrollChange (Vector2 vector) {
@@ -188,7 +206,6 @@ public class InfiniteScroll : MonoBehaviour, IDropHandler {
 			_views [i] = clone;
 		}
 		_rects = new RectTransform[_views.Length];
-		_dataIndexes = new int[_views.Length];
 		for (int i = 0; i < _views.Length; i++) 
 			_rects [i] = _views[i].gameObject.GetComponent <RectTransform> ();
 	}
