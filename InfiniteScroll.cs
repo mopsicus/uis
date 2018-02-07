@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
@@ -13,6 +14,7 @@ public class InfiniteScroll : MonoBehaviour, IDropHandler {
 
 	public event Action<int, GameObject> FillItem = delegate {};
 	public event Action<Direction> PullLoad = delegate {};
+	public event Action<int, GameObject> OnClickItem = delegate { };
 
 	[Header("Item settings")]
 	public GameObject prefab;
@@ -46,13 +48,14 @@ public class InfiniteScroll : MonoBehaviour, IDropHandler {
 	private RectTransform _content;
 	private RectTransform[] _rects;
 	private GameObject[] _views;
+	private Dictionary<string, int> _hashCodeToIndex;
 	private int[] _dataIndexes;
 	private bool _isCanLoadUp;
 	private bool _isCanLoadDown;
-	private int _previousPosition;
 	private int _count;
 
 	void Awake () {
+		_hashCodeToIndex = new Dictionary<string, int>();
 		_scroll = GetComponent <ScrollRect> ();
 		_scroll.onValueChanged.AddListener(OnScrollChange);
 		_content = _scroll.viewport.transform.GetChild(0).GetComponent <RectTransform> ();
@@ -76,6 +79,7 @@ public class InfiniteScroll : MonoBehaviour, IDropHandler {
 			{
 				_dataIndexes[index] = i;
 				FillItem(i, _views[index]);
+				_hashCodeToIndex[_views[index].GetHashCode().ToString()] = i;
 			}
 		}		
 	}
@@ -119,7 +123,6 @@ public class InfiniteScroll : MonoBehaviour, IDropHandler {
 	}
 		
 	public void InitData (int count) {
-		_previousPosition = 0;
 		_count = count;
 		float h = height * count * 1f + top + bottom + (count == 0 ? 0 : ((count - 1) * spacing));
 		_content.sizeDelta = new Vector2 (_content.sizeDelta.x, h);
@@ -138,7 +141,9 @@ public class InfiniteScroll : MonoBehaviour, IDropHandler {
 			y += spacing + height;
 			if (i + 1 > _count)
 				continue;
-			FillItem (i, _views[i]);
+			_dataIndexes[i] = i;
+			FillItem(i, _views[i]);
+			_hashCodeToIndex[_views[i].GetHashCode().ToString()] = i;
 		}
 	}
 		
@@ -149,7 +154,6 @@ public class InfiniteScroll : MonoBehaviour, IDropHandler {
 		Vector2 pos = _content.anchoredPosition;
 		if (direction == Direction.Top) {
 			pos.y = (height + spacing) * newCount;
-			_previousPosition = newCount;
 		} else 
 			pos.y = newHeight - (height * spacing) * newCount - (float)Screen.currentResolution.height;
 		_content.anchoredPosition = pos;
@@ -185,12 +189,19 @@ public class InfiniteScroll : MonoBehaviour, IDropHandler {
 			rect.anchorMax = new Vector2(1f, 1f);
 			rect.offsetMax = new Vector2(0f, 0f);
 			rect.offsetMin = new Vector2(0f, -height);
+			clone.GetComponent<Button>().onClick.AddListener(_OnClickItem);
 			_views [i] = clone;
 		}
 		_rects = new RectTransform[_views.Length];
 		_dataIndexes = new int[_views.Length];
 		for (int i = 0; i < _views.Length; i++) 
 			_rects [i] = _views[i].gameObject.GetComponent <RectTransform> ();
+	}
+
+	void _OnClickItem()
+	{
+		int selectedIndex = _hashCodeToIndex[EventSystem.current.currentSelectedGameObject.GetHashCode().ToString()];
+		this.OnClickItem(selectedIndex, EventSystem.current.currentSelectedGameObject);
 	}
 
 	void CreateLabels () {
