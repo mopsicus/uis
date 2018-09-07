@@ -3,6 +3,15 @@ Infinite Scroll is a script extension that allows you to use ScrollRect control 
 
 **It's easy to use, and fastes, no laggy, no jitter. Tested on iOS and Android.**
 
+## Features
+1. Easy, light, mobile-friendly, just one script
+2. List items are fully customizable to fit your project
+3. Dynamic, data-driven lists
+4. Efficient reusing of list items
+5. Optional pull-to-refresh function
+6. Diffirent list items height support!
+7. Demos, tutorials and full C# source code are all included
+
 ## How to use
 1. Copy the files into your existing unity project asset folder
 2. Attach ```InfiniteScroll``` script to your Unity UI ```ScrollView``` object
