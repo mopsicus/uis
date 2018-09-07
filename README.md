@@ -21,4 +21,4 @@ Infinite Scroll is a script extension that allows you to use ScrollRect control 
 Open Demo scene and build, to try how it works
 
 ## Example
-[![Infinite Scroll demo](https://img.youtube.com/vi/NQQWdAd2i9c/0.jpg)](https://www.youtube.com/watch?v=NQQWdAd2i9c)
+[![Infinite Scroll demo](https://img.youtube.com/vi/NQQWdAd2i9c/0.jpg)](https://www.youtube.com/watch?v=cUkDoX_AR2U)
