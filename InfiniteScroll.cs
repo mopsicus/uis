@@ -350,7 +350,7 @@ namespace Mopsicus.InfiniteScroll {
 		public void ApplyDataTo (int count, int newCount, Direction direction) {
 			_count = count;
 			if (_count <= _views.Length) {
-				AddRowToEnd ();
+				InitData (count);
 				return;
 			}
 			float height = CalcSizesPositions (count);
@@ -389,37 +389,11 @@ namespace Mopsicus.InfiniteScroll {
 		}
 
 		/// <summary>
-		/// Add (active) last item, if it less than container height
-		/// </summary>
-		public void AddRowToEnd () {
-			float height = CalcSizesPositions (_count);
-			_content.sizeDelta = new Vector2 (_content.sizeDelta.x, height);
-			Vector2 pos = _content.anchoredPosition;
-			pos.y = height - (_heights[_heights.Count - 1] + ItemSpacing) - _container.height;
-			_content.anchoredPosition = pos;
-			int index = _count - 1;
-			for (int i = 0; i < _views.Length; i++) {
-				if (!_views[i].activeSelf) {
-					_views[i].gameObject.SetActive (true);
-					int newIndex = index % _views.Length;
-					_views[newIndex].name = index.ToString ();
-					pos = _rects[newIndex].anchoredPosition;
-					pos.y = _positions[newIndex];
-					_rects[newIndex].anchoredPosition = pos;
-					OnFill (index, _views[newIndex]);
-					break;
-				}
-			}
-		}
-
-		/// <summary>
 		/// Update list after items delete
 		/// </summary>
 		/// <param name="index">Index to move from</param>
-		/// <param name="count">New total item count</param>
-		void MoveDataTo (int index, int count) {
-			_count = count;
-			float height = CalcSizesPositions (_count);
+		/// <param name="height">New height</param>
+		void MoveDataTo (int index, float height) {
 			_content.sizeDelta = new Vector2 (_content.sizeDelta.x, height);
 			Vector2 pos = _content.anchoredPosition;
 			for (int i = 0; i < _views.Length; i++) {
@@ -427,7 +401,9 @@ namespace Mopsicus.InfiniteScroll {
 				_views[newIndex].name = index.ToString ();
 				if (index >= _count) {
 					_views[newIndex].gameObject.SetActive (false);
+					continue;
 				} else {
+					_views[newIndex].gameObject.SetActive (true);
 					OnFill (index, _views[newIndex]);
 				}
 				pos = _rects[newIndex].anchoredPosition;
@@ -455,12 +431,13 @@ namespace Mopsicus.InfiniteScroll {
 		/// </summary>
 		/// <param name="index">Index in list data</param>
 		public void Recycle (int index) {
+			_count--;
 			string name = index.ToString ();
+			float height = CalcSizesPositions (_count);
 			for (int i = 0; i < _views.Length; i++) {
 				if (string.CompareOrdinal (_views[i].name, name) == 0) {
 					_views[i].gameObject.SetActive (false);
-					_count--;
-					MoveDataTo (i, _count);
+					MoveDataTo (i, height);
 					break;
 				}
 			}
