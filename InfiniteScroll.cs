@@ -442,6 +442,38 @@ namespace Mopsicus.InfiniteScroll {
 				}
 			}
 		}
+		
+		/// <summary>
+		/// Update visible items with new data
+		/// </summary>
+		public void UpdateVisible () {
+			bool showed = false;
+			for (int i = 0; i < _views.Length; i++) {
+				showed = i < _count;
+				_views[i].gameObject.SetActive (showed);
+				if (i + 1 > _count) {
+					continue;
+				}
+				int index = int.Parse (_views[i].name);
+				OnFill (index, _views[i]);
+			}
+		}		
+
+		/// <summary>
+		/// Clear views cache
+		/// Needed to recreate views after Prefab change
+		/// </summary>
+		public void RefreshViews () {
+			if (_views == null) {
+				return;
+			}
+			for (int i = 0; i < _views.Length; i++) {
+				Destroy (_views[i].gameObject);
+			}
+			_rects = null;
+			_views = null;
+			CreateViews ();
+		}		
 
 		/// <summary>
 		/// Create views
