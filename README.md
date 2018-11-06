@@ -9,7 +9,7 @@ Infinite Scroll is a script extension that allows you to use ScrollRect control 
 3. Dynamic, data-driven lists
 4. Efficient reusing of list items
 5. Optional pull-to-refresh function
-6. Diffirent list items height support!
+6. Diffirent list items height/width support!
 7. Demos, tutorials and full C# source code are all included
 
 ## How to use
