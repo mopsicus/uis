@@ -31,9 +31,6 @@ public class Demo3 : MonoBehaviour {
 	}
 
 	void OnFillItem (int index, GameObject item) {
-		Vector2 size = item.GetComponent<RectTransform> ().sizeDelta;
-		size.y = _heights[index];
-		item.GetComponent<RectTransform> ().sizeDelta = size;
 		item.GetComponentInChildren<Text> ().text = _list[index].ToString ();
 	}
 

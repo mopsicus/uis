@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Demo4 : MonoBehaviour {
+public class Demo5 : MonoBehaviour {
 
 	[SerializeField]
 	private InfiniteScroll Scroll;
@@ -17,15 +17,15 @@ public class Demo4 : MonoBehaviour {
 
 	private List<int> _list = new List<int> ();
 
-	private List<int> _heights = new List<int> ();
+	private List<int> _widths = new List<int> ();
 
 	void Start () {
 		Scroll.OnFill += OnFillItem;
-		Scroll.OnHeight += OnHeightItem;
+		Scroll.OnWidth += OnWidthItem;
 		Scroll.OnPull += OnPullItem;
 		for (int i = 0; i < Count; i++) {
 			_list.Add (i);
-			_heights.Add (Random.Range (100, 200));
+			_widths.Add (Random.Range (100, 200));
 		}
 		Scroll.InitData (_list.Count);
 	}
@@ -34,8 +34,8 @@ public class Demo4 : MonoBehaviour {
 		item.GetComponentInChildren<Text> ().text = _list[index].ToString ();
 	}
 
-	int OnHeightItem (int index) {
-		return _heights[index];
+	int OnWidthItem (int index) {
+		return _widths[index];
 	}
 
 	void OnPullItem (InfiniteScroll.Direction direction) {
@@ -43,23 +43,17 @@ public class Demo4 : MonoBehaviour {
 		if (direction == InfiniteScroll.Direction.Top) {
 			for (int i = 0; i < PullCount; i++) {
 				_list.Insert (0, index);
-				_heights.Insert (0, Random.Range (100, 200));
+				_widths.Insert (0, Random.Range (100, 200));
 				index++;
 			}
 		} else {
 			for (int i = 0; i < PullCount; i++) {
 				_list.Add (index);
-				_heights.Add (Random.Range (100, 200));
+				_widths.Add (Random.Range (100, 200));
 				index++;
 			}
 		}
 		Scroll.ApplyDataTo (_list.Count, PullCount, direction);
-	}
-
-	public void RemoveItem (int index) {
-		_list.RemoveAt (index);
-		_heights.RemoveAt (index);
-		Scroll.Recycle (index);
 	}
 
 	public void SceneLoad (int index) {

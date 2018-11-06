@@ -194,15 +194,26 @@ MonoBehaviour:
   Prefab: {fileID: 1213794582161676, guid: b3be0441af2d548b68eb12fb02c3c0b4, type: 2}
   TopPadding: 10
   BottomPadding: 10
+  LeftPadding: 10
+  RightPadding: 10
   ItemSpacing: 2
   TopPullLabel: Pull to refresh
   TopReleaseLabel: Release to load
   BottomPullLabel: Pull to refresh
   BottomReleaseLabel: Release to load
+  LeftPullLabel: Pull to refresh
+  LeftReleaseLabel: Release to load
+  RightPullLabel: Pull to refresh
+  RightReleaseLabel: Release to load
   IsPullTop: 1
   IsPullBottom: 1
+  IsPullLeft: 1
+  IsPullRight: 1
   TopLabel: {fileID: 0}
   BottomLabel: {fileID: 0}
+  LeftLabel: {fileID: 0}
+  RightLabel: {fileID: 0}
+  Type: 0
 --- !u!1 &522404062
 GameObject:
   m_ObjectHideFlags: 0
@@ -235,10 +246,10 @@ RectTransform:
   m_Father: {fileID: 1858008202}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 477.75, y: -25}
-  m_SizeDelta: {x: 318.5, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &522404064
 MonoBehaviour:
@@ -842,10 +853,10 @@ RectTransform:
   m_Father: {fileID: 1858008202}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 159.25, y: -25}
-  m_SizeDelta: {x: 318.5, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1830380168
 MonoBehaviour:
