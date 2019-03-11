@@ -10,10 +10,10 @@ public class Demo2 : MonoBehaviour {
 	private InfiniteScroll Scroll;
 
 	[SerializeField]
-	private int Count = 100;
+	private int Count = 7;
 
 	[SerializeField]
-	private int PullCount = 25;
+	private int PullCount = 7;
 
 	private List<int> _list = new List<int> ();
 

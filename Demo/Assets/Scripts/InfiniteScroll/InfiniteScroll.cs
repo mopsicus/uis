@@ -7,7 +7,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using LeopotamGroup.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,17 +17,7 @@ namespace Mopsicus.InfiniteScroll {
 	/// <summary>
 	/// Infinite scroller for long lists
 	/// </summary>
-	public class Scroller : MonoBehaviour, IDropHandler {
-
-		/// <summary>
-		/// Coefficient when labels should action
-		/// </summary>
-		const float PULL_VALUE = 1.5f;
-
-		/// <summary>
-		/// Label position offset
-		/// </summary>
-		const float LABEL_OFFSET = 85f;
+	public class InfiniteScroll : MonoBehaviour, IDropHandler {
 
 		/// <summary>
 		/// Period for no-update list, if very fast add
@@ -185,6 +174,17 @@ namespace Mopsicus.InfiniteScroll {
 		/// Can we pull from right
 		/// </summary>
 		public bool IsPullRight = true;
+
+		[Header ("Offsets")]
+		/// <summary>
+		/// Coefficient when labels should action
+		/// </summary>
+		public float PullValue = 1.5f;
+
+		/// <summary>
+		/// Label position offset
+		/// </summary>
+		public float LabelOffset = 85f;		
 
 		[HideInInspector]
 		/// <summary>
@@ -459,20 +459,20 @@ namespace Mopsicus.InfiniteScroll {
 			} else {
 				h = y;
 			}
-			if (y < -LABEL_OFFSET && IsPullTop) {
+			if (y < -LabelOffset && IsPullTop) {
 				TopLabel.gameObject.SetActive (true);
 				TopLabel.text = TopPullLabel;
-				if (y < -LABEL_OFFSET * PULL_VALUE) {
+				if (y < -LabelOffset * PullValue) {
 					TopLabel.text = TopReleaseLabel;
 					_isCanLoadUp = true;
 				}
 			} else {
 				TopLabel.gameObject.SetActive (false);
 			}
-			if (h > LABEL_OFFSET || z < -LABEL_OFFSET && IsPullBottom) {
+			if (h > LabelOffset || z < -LabelOffset && IsPullBottom) {
 				BottomLabel.gameObject.SetActive (true);
 				BottomLabel.text = BottomPullLabel;
-				if (h > LABEL_OFFSET * PULL_VALUE || z < -LABEL_OFFSET * PULL_VALUE) {
+				if (h > LabelOffset * PullValue || z < -LabelOffset * PullValue) {
 					BottomLabel.text = BottomReleaseLabel;
 					_isCanLoadDown = true;
 				}
@@ -499,23 +499,20 @@ namespace Mopsicus.InfiniteScroll {
 			} else {
 				w = x;
 			}
-			Logger.Info("x = "+x);
-			Logger.Info("w = "+w);
-			Logger.Info("z = "+z);
-			if (x > LABEL_OFFSET && IsPullLeft) {
+			if (x > LabelOffset && IsPullLeft) {
 				LeftLabel.gameObject.SetActive (true);
 				LeftLabel.text = LeftPullLabel;
-				if (x > LABEL_OFFSET * PULL_VALUE) {
+				if (x > LabelOffset * PullValue) {
 					LeftLabel.text = LeftReleaseLabel;
 					_isCanLoadLeft = true;
 				}
 			} else {
 				LeftLabel.gameObject.SetActive (false);
 			}
-			if (w < -LABEL_OFFSET || z < -LABEL_OFFSET && IsPullRight) {
+			if (w < -LabelOffset || z < -LabelOffset && IsPullRight) {
 				RightLabel.gameObject.SetActive (true);
 				RightLabel.text = RightPullLabel;
-				if (w < -LABEL_OFFSET * PULL_VALUE || z < -LABEL_OFFSET * PULL_VALUE) {
+				if (w < -LabelOffset * PullValue || z < -LabelOffset * PullValue) {
 					RightLabel.text = RightReleaseLabel;
 					_isCanLoadRight = true;
 				}
@@ -732,11 +729,16 @@ namespace Mopsicus.InfiniteScroll {
 			float _topPosition = _content.anchoredPosition.y - ItemSpacing;
 			float itemPosition = Mathf.Abs (_positions[_previousPosition]) + _heights[_previousPosition];
 			int position = (_topPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
+			if (position < 0) {
+				_previousPosition = 0;
+				position = 1;
+			}
 			for (int i = 0; i < _views.Length; i++) {
 				int newIndex = position % _views.Length;
 				if (newIndex < 0) {
 					continue;
 				}
+				_views[newIndex].gameObject.SetActive (true);
 				_views[newIndex].name = position.ToString ();
 				OnFill (position, _views[newIndex]);
 				pos = _rects[newIndex].anchoredPosition;
@@ -785,11 +787,16 @@ namespace Mopsicus.InfiniteScroll {
 			float _leftPosition = _content.anchoredPosition.x - ItemSpacing;
 			float itemPosition = Mathf.Abs (_positions[_previousPosition]) + _widths[_previousPosition];
 			int position = (_leftPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
+			if (position < 0) {
+				_previousPosition = 0;
+				position = 1;
+			}			
 			for (int i = 0; i < _views.Length; i++) {
 				int newIndex = position % _views.Length;
 				if (newIndex < 0) {
 					continue;
 				}
+				_views[newIndex].gameObject.SetActive (true);
 				_views[newIndex].name = position.ToString ();
 				OnFill (position, _views[newIndex]);
 				pos = _rects[newIndex].anchoredPosition;
@@ -913,7 +920,7 @@ namespace Mopsicus.InfiniteScroll {
 					_scroll.velocity = new Vector2 ((direction == Direction.Left) ? speed : -speed, 0f);
 				}
 				timer += Time.deltaTime / SCROLL_DURATION;
-				yield return Yields.WaitForEndOfFrame;
+				yield return null;
 			}
 			if (Type == 0) {
 				_scroll.velocity = new Vector2 (0f, (direction == Direction.Top) ? -SCROLL_SPEED : SCROLL_SPEED);
@@ -1093,7 +1100,7 @@ namespace Mopsicus.InfiniteScroll {
 			rect.anchorMin = new Vector2 (0f, 1f);
 			rect.anchorMax = Vector2.one;
 			rect.offsetMax = Vector2.zero;
-			rect.offsetMin = new Vector2 (0f, -LABEL_OFFSET);
+			rect.offsetMin = new Vector2 (0f, -LabelOffset);
 			rect.anchoredPosition3D = Vector3.zero;
 			topText.SetActive (false);
 			GameObject bottomText = new GameObject ("BottomLabel");
@@ -1109,7 +1116,7 @@ namespace Mopsicus.InfiniteScroll {
 			rect.pivot = new Vector2 (0.5f, 0f);
 			rect.anchorMin = Vector2.zero;
 			rect.anchorMax = new Vector2 (1f, 0f);
-			rect.offsetMax = new Vector2 (0f, LABEL_OFFSET);
+			rect.offsetMax = new Vector2 (0f, LabelOffset);
 			rect.offsetMin = Vector2.zero;
 			rect.anchoredPosition3D = Vector3.zero;
 			bottomText.SetActive (false);
@@ -1132,7 +1139,7 @@ namespace Mopsicus.InfiniteScroll {
 			rect.anchorMin = Vector2.zero;
 			rect.anchorMax = new Vector2 (0f, 1f);
 			rect.offsetMax = Vector2.zero;
-			rect.offsetMin = new Vector2 (-LABEL_OFFSET * 2, 0f);
+			rect.offsetMin = new Vector2 (-LabelOffset * 2, 0f);
 			rect.anchoredPosition3D = Vector3.zero;
 			leftText.SetActive (false);
 			GameObject rightText = new GameObject ("RightLabel");
@@ -1148,7 +1155,7 @@ namespace Mopsicus.InfiniteScroll {
 			rect.pivot = new Vector2 (1f, 0.5f);
 			rect.anchorMin = new Vector2 (1f, 0f);
 			rect.anchorMax = Vector3.one;
-			rect.offsetMax = new Vector2 (LABEL_OFFSET * 2, 0f);
+			rect.offsetMax = new Vector2 (LabelOffset * 2, 0f);
 			rect.offsetMin = Vector2.zero;
 			rect.anchoredPosition3D = Vector3.zero;
 			rightText.SetActive (false);

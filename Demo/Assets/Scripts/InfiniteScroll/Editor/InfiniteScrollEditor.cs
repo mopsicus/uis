@@ -1,7 +1,7 @@
 ﻿// ----------------------------------------------------------------------------
 // The MIT License
 // InfiniteScroll https://github.com/mopsicus/infinite-scroll-unity
-// Copyright (c) 2018 Mopsicus <mail@mopsicus.ru>
+// Copyright (c) 2018-2019 Mopsicus <mail@mopsicus.ru>
 // ----------------------------------------------------------------------------
 
 using UnityEditor;
@@ -41,6 +41,11 @@ namespace Mopsicus.InfiniteScroll {
 		/// Spacing between items
 		/// </summary>
 		private SerializedProperty _itemSpacing;
+
+		/// <summary>
+		/// Label font asset
+		/// </summary>
+		private SerializedProperty _labelsFont;
 
 		/// <summary>
 		/// Pull top text label
@@ -113,6 +118,16 @@ namespace Mopsicus.InfiniteScroll {
 		private SerializedProperty _isPullRight;
 
 		/// <summary>
+		/// Coefficient when labels should action
+		/// </summary>
+		private SerializedProperty _pullValue;
+
+		/// <summary>
+		/// Label position offset
+		/// </summary>
+		private SerializedProperty _labelOffset;		
+
+		/// <summary>
 		/// Init data
 		/// </summary>
 		private void OnEnable () {
@@ -122,6 +137,7 @@ namespace Mopsicus.InfiniteScroll {
 			_topPadding = _object.FindProperty ("TopPadding");
 			_bottomPadding = _object.FindProperty ("BottomPadding");
 			_itemSpacing = _object.FindProperty ("ItemSpacing");
+			_labelsFont = _object.FindProperty ("LabelsFont");
 			_topPullLabel = _object.FindProperty ("TopPullLabel");
 			_topReleaseLabel = _object.FindProperty ("TopReleaseLabel");
 			_bottomPullLabel = _object.FindProperty ("BottomPullLabel");
@@ -136,6 +152,8 @@ namespace Mopsicus.InfiniteScroll {
 			_rightReleaseLabel = _object.FindProperty ("RightReleaseLabel");
 			_isPullLeft = _object.FindProperty ("IsPullLeft");
 			_isPullRight = _object.FindProperty ("IsPullRight");
+			_pullValue = _object.FindProperty ("PullValue");
+			_labelOffset = _object.FindProperty ("LabelOffset");			
 		}
 
 		/// <summary>
@@ -151,24 +169,30 @@ namespace Mopsicus.InfiniteScroll {
 					EditorGUILayout.PropertyField (_topPadding);
 					EditorGUILayout.PropertyField (_bottomPadding);
 					EditorGUILayout.PropertyField (_itemSpacing);
+					EditorGUILayout.PropertyField (_labelsFont);
 					EditorGUILayout.PropertyField (_topPullLabel);
 					EditorGUILayout.PropertyField (_topReleaseLabel);
 					EditorGUILayout.PropertyField (_bottomPullLabel);
 					EditorGUILayout.PropertyField (_bottomReleaseLabel);
 					EditorGUILayout.PropertyField (_isPullTop);
 					EditorGUILayout.PropertyField (_isPullBottom);
+					EditorGUILayout.PropertyField (_pullValue);
+					EditorGUILayout.PropertyField (_labelOffset);					
 					break;
 				case 1:
 					EditorGUILayout.PropertyField (_prefab);
 					EditorGUILayout.PropertyField (_leftPadding);
 					EditorGUILayout.PropertyField (_rightPadding);
 					EditorGUILayout.PropertyField (_itemSpacing);
+					EditorGUILayout.PropertyField (_labelsFont);
 					EditorGUILayout.PropertyField (_leftPullLabel);
 					EditorGUILayout.PropertyField (_leftReleaseLabel);
 					EditorGUILayout.PropertyField (_rightPullLabel);
 					EditorGUILayout.PropertyField (_rightReleaseLabel);
 					EditorGUILayout.PropertyField (_isPullLeft);
 					EditorGUILayout.PropertyField (_isPullRight);
+					EditorGUILayout.PropertyField (_pullValue);
+					EditorGUILayout.PropertyField (_labelOffset);					
 					break;
 				default:
 					break;
