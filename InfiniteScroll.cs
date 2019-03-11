@@ -1,11 +1,14 @@
 ﻿// ----------------------------------------------------------------------------
 // The MIT License
 // InfiniteScroll https://github.com/mopsicus/infinite-scroll-unity
-// Copyright (c) 2018 Mopsicus <mail@mopsicus.ru>
+// Copyright (c) 2018-2019 Mopsicus <mail@mopsicus.ru>
 // ----------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using LeopotamGroup.Common;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,17 +18,32 @@ namespace Mopsicus.InfiniteScroll {
 	/// <summary>
 	/// Infinite scroller for long lists
 	/// </summary>
-	public class InfiniteScroll : MonoBehaviour, IDropHandler {
+	public class Scroller : MonoBehaviour, IDropHandler {
 
 		/// <summary>
 		/// Coefficient when labels should action
 		/// </summary>
-		const float PULL_VALUE = 0.05f;
+		const float PULL_VALUE = 1.5f;
 
 		/// <summary>
 		/// Label position offset
 		/// </summary>
-		const float LABEL_OFFSET = 55f;
+		const float LABEL_OFFSET = 85f;
+
+		/// <summary>
+		/// Period for no-update list, if very fast add
+		/// </summary>
+		private const int UPDATE_TIME_DIFF = 500;
+
+		/// <summary>
+		/// Speed for scroll on move
+		/// </summary>
+		private const float SCROLL_SPEED = 50f;
+
+		/// <summary>
+		/// Duration for scroll move
+		/// </summary>
+		private const float SCROLL_DURATION = 0.25f;
 
 		/// <summary>
 		/// Load direction
@@ -102,6 +120,11 @@ namespace Mopsicus.InfiniteScroll {
 
 		[Header ("Labels")]
 		/// <summary>
+		/// Label font asset
+		/// </summary>
+		public TMP_FontAsset LabelsFont;
+
+		/// <summary>
 		/// Pull top text label
 		/// </summary>
 		public string TopPullLabel = "Pull to refresh";
@@ -167,25 +190,25 @@ namespace Mopsicus.InfiniteScroll {
 		/// <summary>
 		/// Top label
 		/// </summary>
-		public Text TopLabel;
+		public TextMeshProUGUI TopLabel;
 
 		[HideInInspector]
 		/// <summary>
 		/// Bottom label
 		/// </summary>
-		public Text BottomLabel;
+		public TextMeshProUGUI BottomLabel;
 
 		[HideInInspector]
 		/// <summary>
 		/// Left label
 		/// </summary>
-		public Text LeftLabel;
+		public TextMeshProUGUI LeftLabel;
 
 		[HideInInspector]
 		/// <summary>
 		/// Right label
 		/// </summary>
-		public Text RightLabel;
+		public TextMeshProUGUI RightLabel;
 
 		/// <summary>
 		/// Type of scroller
@@ -262,6 +285,11 @@ namespace Mopsicus.InfiniteScroll {
 		/// Items positions cache
 		/// </summary>
 		private Dictionary<int, float> _positions;
+
+		/// <summary>
+		/// Last manual move time to end
+		/// </summary>
+		private DateTime _lastMoveTime;
 
 		/// <summary>
 		/// Constructor
@@ -423,31 +451,28 @@ namespace Mopsicus.InfiniteScroll {
 				return;
 			}
 			float y = 0f;
+			float h = 0f;
 			float z = 0f;
-			float coef = _count / _views.Length;
-			if (coef >= 1f) {
-				if (vector.y > 1f) {
-					y = (vector.y - 1f) * coef;
-				} else if (vector.y < 0f) {
-					y = vector.y * coef;
-				}
+			y = _content.anchoredPosition.y;
+			if (_content.sizeDelta.y > Screen.height) {
+				z = _content.sizeDelta.y - Screen.height - y;
 			} else {
-				z = _content.anchoredPosition.y;
+				h = y;
 			}
-			if ((y > PULL_VALUE || z < -LABEL_OFFSET / 2f) && IsPullTop) {
+			if (y < -LABEL_OFFSET && IsPullTop) {
 				TopLabel.gameObject.SetActive (true);
 				TopLabel.text = TopPullLabel;
-				if (y > PULL_VALUE * 2 || z < -LABEL_OFFSET) {
+				if (y < -LABEL_OFFSET * PULL_VALUE) {
 					TopLabel.text = TopReleaseLabel;
 					_isCanLoadUp = true;
 				}
 			} else {
 				TopLabel.gameObject.SetActive (false);
 			}
-			if ((y < -PULL_VALUE || z > LABEL_OFFSET / 2f) && IsPullBottom) {
+			if (h > LABEL_OFFSET || z < -LABEL_OFFSET && IsPullBottom) {
 				BottomLabel.gameObject.SetActive (true);
 				BottomLabel.text = BottomPullLabel;
-				if (y < -PULL_VALUE * 2 || z > LABEL_OFFSET) {
+				if (h > LABEL_OFFSET * PULL_VALUE || z < -LABEL_OFFSET * PULL_VALUE) {
 					BottomLabel.text = BottomReleaseLabel;
 					_isCanLoadDown = true;
 				}
@@ -466,37 +491,37 @@ namespace Mopsicus.InfiniteScroll {
 				return;
 			}
 			float x = 0f;
+			float w = 0f;
 			float z = 0f;
-			float coef = _count / _views.Length;
-			if (coef >= 1f) {
-				if (vector.x > 1f) {
-					x = (vector.x - 1f) * coef;
-				} else if (vector.x < 0f) {
-					x = vector.x * coef;
-				}
+			x = _content.anchoredPosition.x;
+			if (_content.sizeDelta.x > Screen.width) {
+				z = _content.sizeDelta.x - Screen.width + x;
 			} else {
-				z = _content.anchoredPosition.x;
+				w = x;
 			}
-			if ((x > PULL_VALUE || z < -LABEL_OFFSET / 2f) && IsPullRight) {
-				RightLabel.gameObject.SetActive (true);
-				RightLabel.text = RightPullLabel;
-				if (x > PULL_VALUE * 2 || z < -LABEL_OFFSET) {
-					RightLabel.text = RightReleaseLabel;
-					_isCanLoadRight = true;
-				}
-			} else {
-				RightLabel.gameObject.SetActive (false);
-			}
-			if ((x < -PULL_VALUE || z > LABEL_OFFSET / 2f) && IsPullLeft) {
+			Logger.Info("x = "+x);
+			Logger.Info("w = "+w);
+			Logger.Info("z = "+z);
+			if (x > LABEL_OFFSET && IsPullLeft) {
 				LeftLabel.gameObject.SetActive (true);
 				LeftLabel.text = LeftPullLabel;
-				if (x < -PULL_VALUE * 2 || z > LABEL_OFFSET) {
+				if (x > LABEL_OFFSET * PULL_VALUE) {
 					LeftLabel.text = LeftReleaseLabel;
 					_isCanLoadLeft = true;
 				}
 			} else {
 				LeftLabel.gameObject.SetActive (false);
 			}
+			if (w < -LABEL_OFFSET || z < -LABEL_OFFSET && IsPullRight) {
+				RightLabel.gameObject.SetActive (true);
+				RightLabel.text = RightPullLabel;
+				if (w < -LABEL_OFFSET * PULL_VALUE || z < -LABEL_OFFSET * PULL_VALUE) {
+					RightLabel.text = RightReleaseLabel;
+					_isCanLoadRight = true;
+				}
+			} else {
+				RightLabel.gameObject.SetActive (false);
+			}			
 		}
 
 		/// <summary>
@@ -709,6 +734,9 @@ namespace Mopsicus.InfiniteScroll {
 			int position = (_topPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
 			for (int i = 0; i < _views.Length; i++) {
 				int newIndex = position % _views.Length;
+				if (newIndex < 0) {
+					continue;
+				}
 				_views[newIndex].name = position.ToString ();
 				OnFill (position, _views[newIndex]);
 				pos = _rects[newIndex].anchoredPosition;
@@ -759,6 +787,9 @@ namespace Mopsicus.InfiniteScroll {
 			int position = (_leftPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
 			for (int i = 0; i < _views.Length; i++) {
 				int newIndex = position % _views.Length;
+				if (newIndex < 0) {
+					continue;
+				}
 				_views[newIndex].name = position.ToString ();
 				OnFill (position, _views[newIndex]);
 				pos = _rects[newIndex].anchoredPosition;
@@ -840,6 +871,54 @@ namespace Mopsicus.InfiniteScroll {
 				size.x = _widths[index];
 				_rects[newIndex].sizeDelta = size;
 				index++;
+			}
+		}
+
+		/// <summary>
+		/// Move scroll to side
+		/// </summary>
+		/// <param name="direction">Direction to move</param>
+		public void MoveToSide (Direction direction) {
+			DateTime now = DateTime.Now;
+			if ((now - _lastMoveTime).TotalMilliseconds < UPDATE_TIME_DIFF) {
+				return;
+			}
+			_lastMoveTime = now;
+			StartCoroutine (MoveTo (direction));
+		}
+
+		/// <summary>
+		/// Move coroutine
+		/// </summary>
+		/// <param name="direction">Direction to move</param>
+		IEnumerator MoveTo (Direction direction) {
+			float speed = SCROLL_SPEED;
+			float start = 0f;
+			float end = 0f;
+			float timer = 0f;
+			if (Type == 0) {
+				start = _scroll.verticalNormalizedPosition;
+				end = (direction == Direction.Bottom) ? 0f : 1f;
+			} else {
+				start = _scroll.horizontalNormalizedPosition;
+				end = (direction == Direction.Left) ? 0f : 1f;
+			}
+			while (timer <= 1f) {
+				speed = Mathf.Lerp (speed, 0f, timer);
+				if (Type == 0) {
+					_scroll.verticalNormalizedPosition = Mathf.Lerp (start, end, timer);
+					_scroll.velocity = new Vector2 (0f, (direction == Direction.Top) ? -speed : speed);
+				} else {
+					_scroll.horizontalNormalizedPosition = Mathf.Lerp (start, end, timer);
+					_scroll.velocity = new Vector2 ((direction == Direction.Left) ? speed : -speed, 0f);
+				}
+				timer += Time.deltaTime / SCROLL_DURATION;
+				yield return Yields.WaitForEndOfFrame;
+			}
+			if (Type == 0) {
+				_scroll.velocity = new Vector2 (0f, (direction == Direction.Top) ? -SCROLL_SPEED : SCROLL_SPEED);
+			} else {
+				_scroll.velocity = new Vector2 ((direction == Direction.Left) ? SCROLL_SPEED : -SCROLL_SPEED, 0f);
 			}
 		}
 
@@ -1003,11 +1082,11 @@ namespace Mopsicus.InfiniteScroll {
 		void CreateLabelsVertical () {
 			GameObject topText = new GameObject ("TopLabel");
 			topText.transform.SetParent (_scroll.viewport.transform);
-			TopLabel = topText.AddComponent<Text> ();
-			TopLabel.font = Resources.GetBuiltinResource<Font> ("Arial.ttf");
+			TopLabel = topText.AddComponent<TextMeshProUGUI> ();
+			TopLabel.font = LabelsFont;
 			TopLabel.fontSize = 24;
 			TopLabel.transform.localScale = Vector3.one;
-			TopLabel.alignment = TextAnchor.MiddleCenter;
+			TopLabel.alignment = TextAlignmentOptions.Center;
 			TopLabel.text = TopPullLabel;
 			RectTransform rect = TopLabel.GetComponent<RectTransform> ();
 			rect.pivot = new Vector2 (0.5f, 1f);
@@ -1019,11 +1098,11 @@ namespace Mopsicus.InfiniteScroll {
 			topText.SetActive (false);
 			GameObject bottomText = new GameObject ("BottomLabel");
 			bottomText.transform.SetParent (_scroll.viewport.transform);
-			BottomLabel = bottomText.AddComponent<Text> ();
-			BottomLabel.font = Resources.GetBuiltinResource<Font> ("Arial.ttf");
+			BottomLabel = bottomText.AddComponent<TextMeshProUGUI> ();
+			BottomLabel.font = LabelsFont;
 			BottomLabel.fontSize = 24;
 			BottomLabel.transform.localScale = Vector3.one;
-			BottomLabel.alignment = TextAnchor.MiddleCenter;
+			BottomLabel.alignment = TextAlignmentOptions.Center;
 			BottomLabel.text = BottomPullLabel;
 			BottomLabel.transform.position = Vector3.zero;
 			rect = BottomLabel.GetComponent<RectTransform> ();
@@ -1042,11 +1121,11 @@ namespace Mopsicus.InfiniteScroll {
 		void CreateLabelsHorizontal () {
 			GameObject leftText = new GameObject ("LeftLabel");
 			leftText.transform.SetParent (_scroll.viewport.transform);
-			LeftLabel = leftText.AddComponent<Text> ();
-			LeftLabel.font = Resources.GetBuiltinResource<Font> ("Arial.ttf");
+			LeftLabel = leftText.AddComponent<TextMeshProUGUI> ();
+			LeftLabel.font = LabelsFont;
 			LeftLabel.fontSize = 24;
 			LeftLabel.transform.localScale = Vector3.one;
-			LeftLabel.alignment = TextAnchor.MiddleCenter;
+			LeftLabel.alignment = TextAlignmentOptions.Center;
 			LeftLabel.text = LeftPullLabel;
 			RectTransform rect = LeftLabel.GetComponent<RectTransform> ();
 			rect.pivot = new Vector2 (0f, 0.5f);
@@ -1058,11 +1137,11 @@ namespace Mopsicus.InfiniteScroll {
 			leftText.SetActive (false);
 			GameObject rightText = new GameObject ("RightLabel");
 			rightText.transform.SetParent (_scroll.viewport.transform);
-			RightLabel = rightText.AddComponent<Text> ();
-			RightLabel.font = Resources.GetBuiltinResource<Font> ("Arial.ttf");
+			RightLabel = rightText.AddComponent<TextMeshProUGUI> ();
+			RightLabel.font = LabelsFont;
 			RightLabel.fontSize = 24;
 			RightLabel.transform.localScale = Vector3.one;
-			RightLabel.alignment = TextAnchor.MiddleCenter;
+			RightLabel.alignment = TextAlignmentOptions.Center;
 			RightLabel.text = RightPullLabel;
 			RightLabel.transform.position = Vector3.zero;
 			rect = RightLabel.GetComponent<RectTransform> ();
