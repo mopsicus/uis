@@ -469,7 +469,7 @@ namespace Mopsicus.InfiniteScroll {
 			} else {
 				TopLabel.gameObject.SetActive (false);
 			}
-			if (h > LabelOffset || z < -LabelOffset && IsPullBottom) {
+			if ((h > LabelOffset || z < -LabelOffset) && IsPullBottom) {
 				BottomLabel.gameObject.SetActive (true);
 				BottomLabel.text = BottomPullLabel;
 				if (h > LabelOffset * PullValue || z < -LabelOffset * PullValue) {
@@ -509,7 +509,7 @@ namespace Mopsicus.InfiniteScroll {
 			} else {
 				LeftLabel.gameObject.SetActive (false);
 			}
-			if (w < -LabelOffset || z < -LabelOffset && IsPullRight) {
+			if ((w < -LabelOffset || z < -LabelOffset) && IsPullRight) {
 				RightLabel.gameObject.SetActive (true);
 				RightLabel.text = RightPullLabel;
 				if (w < -LabelOffset * PullValue || z < -LabelOffset * PullValue) {
