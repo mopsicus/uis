@@ -1,7 +1,7 @@
 ﻿// ----------------------------------------------------------------------------
 // The MIT License
 // InfiniteScroll https://github.com/mopsicus/infinite-scroll-unity
-// Copyright (c) 2018-2020 Mopsicus <mail@mopsicus.ru>
+// Copyright (c) 2018-2021 Mopsicus <mail@mopsicus.ru>
 // ----------------------------------------------------------------------------
 
 using System;
@@ -341,6 +341,9 @@ namespace Mopsicus.InfiniteScroll {
 			if (_topPosition < 0f) {
 				return;
 			}
+        	if (!_positions.ContainsKey(_previousPosition) || !_heights.ContainsKey(_previousPosition)) {
+            	return;
+        	}			
 			float itemPosition = Mathf.Abs (_positions[_previousPosition]) + _heights[_previousPosition];
 			int position = (_topPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
 			int border = (int) (_positions[0] + _heights[0]);
@@ -405,6 +408,9 @@ namespace Mopsicus.InfiniteScroll {
 			if (_leftPosition < 0f) {
 				return;
 			}
+        	if (!_positions.ContainsKey(_previousPosition) || !_heights.ContainsKey(_previousPosition)) {
+            	return;
+        	}				
 			float itemPosition = Mathf.Abs (_positions[_previousPosition]) + _widths[_previousPosition];
 			int position = (_leftPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
 			int border = (int) (_positions[0] + _widths[0]);

@@ -1,7 +1,7 @@
 ﻿// ----------------------------------------------------------------------------
 // The MIT License
 // InfiniteScroll https://github.com/mopsicus/infinite-scroll-unity
-// Copyright (c) 2018-2019 Mopsicus <mail@mopsicus.ru>
+// Copyright (c) 2018-2021 Mopsicus <mail@mopsicus.ru>
 // ----------------------------------------------------------------------------
 
 using System;
@@ -184,7 +184,7 @@ namespace Mopsicus.InfiniteScroll {
 		/// <summary>
 		/// Label position offset
 		/// </summary>
-		public float LabelOffset = 85f;		
+		public float LabelOffset = 85f;
 
 		[HideInInspector]
 		/// <summary>
@@ -297,6 +297,11 @@ namespace Mopsicus.InfiniteScroll {
 		private float _previousScrollPosition;
 
 		/// <summary>
+		/// Cache position for prevent sides effects
+		/// </summary>
+		private int _saveStepPosition = -1;
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		void Awake () {
@@ -336,8 +341,18 @@ namespace Mopsicus.InfiniteScroll {
 			if (_topPosition < 0f) {
 				return;
 			}
+        	if (!_positions.ContainsKey(_previousPosition) || !_heights.ContainsKey(_previousPosition)) {
+            	return;
+        	}			
 			float itemPosition = Mathf.Abs (_positions[_previousPosition]) + _heights[_previousPosition];
 			int position = (_topPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
+			int border = (int) (_positions[0] + _heights[0]);
+			int step = (int) ((_topPosition + _topPosition / 1.25f) / border);
+			if (step != _saveStepPosition) {
+				_saveStepPosition = step;
+			} else {
+				return;
+			}
 			if (position < 0 || _previousPosition == position || _scroll.velocity.y == 0f) {
 				return;
 			}
@@ -393,8 +408,18 @@ namespace Mopsicus.InfiniteScroll {
 			if (_leftPosition < 0f) {
 				return;
 			}
+        	if (!_positions.ContainsKey(_previousPosition) || !_heights.ContainsKey(_previousPosition)) {
+            	return;
+        	}				
 			float itemPosition = Mathf.Abs (_positions[_previousPosition]) + _widths[_previousPosition];
 			int position = (_leftPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
+			int border = (int) (_positions[0] + _widths[0]);
+			int step = (int) ((_leftPosition + _leftPosition / 1.25f) / border);
+			if (step != _saveStepPosition) {
+				_saveStepPosition = step;
+			} else {
+				return;
+			}			
 			if (position < 0 || _previousPosition == position || _scroll.velocity.x == 0f) {
 				return;
 			}
@@ -531,7 +556,7 @@ namespace Mopsicus.InfiniteScroll {
 				}
 			} else {
 				RightLabel.gameObject.SetActive (false);
-			}		
+			}
 		}
 
 		/// <summary>
@@ -803,7 +828,7 @@ namespace Mopsicus.InfiniteScroll {
 			if (position < 0) {
 				_previousPosition = 0;
 				position = 1;
-			}			
+			}
 			for (int i = 0; i < _views.Length; i++) {
 				int newIndex = position % _views.Length;
 				if (newIndex < 0) {
