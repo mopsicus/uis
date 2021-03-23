@@ -408,7 +408,7 @@ namespace Mopsicus.InfiniteScroll {
 			if (_leftPosition < 0f) {
 				return;
 			}
-        	if (!_positions.ContainsKey(_previousPosition) || !_heights.ContainsKey(_previousPosition)) {
+        	if (!_positions.ContainsKey(_previousPosition) || !_widths.ContainsKey(_previousPosition)) {
             	return;
         	}				
 			float itemPosition = Mathf.Abs (_positions[_previousPosition]) + _widths[_previousPosition];
