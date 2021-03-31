@@ -57,12 +57,12 @@ namespace Mopsicus.InfiniteScroll {
 		/// <summary>
 		/// Delegate for widths
 		/// </summary>
-		public delegate int WidthtItem (int index);
+		public delegate int WidthItem (int index);
 
 		/// <summary>
 		/// Event for get item width
 		/// </summary>
-		public event HeightItem OnWidth;
+		public event WidthItem OnWidth;
 
 		/// <summary>
 		/// Callback on item fill
