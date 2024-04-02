@@ -45,7 +45,7 @@ Get it from [releases page](https://github.com/mopsicus/uis/releases) or add the
 
 See the samples section to get a [demo app](./Samples~/Demo). This demo contains 6 scenes with different ways to use UIS. It will show you how to initiate and use it in your app, how to use pull-to-refresh feature, how to use lists with different height/width of elements.
 
-_Tested in Unity 2020.3.x, Android and iOS._
+_Tested in Unity 2020.3.x._
 
 ### How to use
 
