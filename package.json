@@ -1,0 +1,37 @@
+{
+    "name": "com.mopsicus.uis",
+    "version": "2.0.0",
+    "displayName": "UIS",
+    "description": "UIS – script extension that allows to use the ScrollRect as an infinite spinner/scroller.",
+    "license": "MIT",
+    "author": "Mopsicus <mail@mopsicus.ru>",
+    "homepage": "https://github.com/mopsicus/uis",
+    "changelogUrl": "https://github.com/mopsicus/uis/blob/main/CHANGELOG.md",
+    "documentationUrl": "https://github.com/mopsicus/uis/blob/main/Documentation~/index.md",
+    "unity": "2020.3",
+    "keywords": [
+      "mobile",
+      "scrollrect",
+      "listview",
+      "data-driven",
+      "unity",
+      "list",
+      "spinner",
+      "ios",
+      "android",
+      "scroll",
+      "plugin"
+    ],
+    "dependencies": {},
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/mopsicus/uis.git"
+    },  
+    "samples": [
+      {
+        "displayName": "Demo",
+        "description": "A demo scene to show UIS usage",
+        "path": "Samples~/Demo"
+      }
+    ]
+  }
