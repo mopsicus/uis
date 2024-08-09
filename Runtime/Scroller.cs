@@ -537,6 +537,17 @@ namespace UIS {
         /// Handler on scroller
         /// </summary>
         void OnScrollChange(Vector2 vector) {
+            // Note: If the scroller position changed but the scroll velocity is exactly zero,
+            //       the movement was done via a scrollbar. In this case, we need to ScrollTo()
+            //       the indicated position directly.
+            // Note 2: The normalized scrollbar position is opposite from the ScrollTo() index.
+            //         This is why the we take (1.0 - scrollPos) instead of scrollPos directly.
+            if (_scroll.velocity.magnitude == 0.0f) {
+                var scrollPos = (Type == 0) ? vector.y : vector.x;
+                var newIndex = Mathf.RoundToInt(_count * (1.0f - scrollPos));
+                ScrollTo(newIndex);
+            }
+
             if (Type == 0) {
                 ScrollChangeVertical();
             } else {
