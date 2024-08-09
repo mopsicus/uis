@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -25,7 +25,7 @@ namespace UIS {
         /// <summary>
         /// Addon count views
         /// </summary>
-        const int ADDON_VIEWS_COUNT = 4;
+        public int AddonViewCount = 4;
 
         /// <summary>
         /// Velocity for scroll to function
@@ -955,7 +955,7 @@ namespace UIS {
                 index = 0;
             }
             if (index + _views.Length >= _count) {
-                index = _count - _views.Length + ADDON_VIEWS_COUNT;
+                index = _count - _views.Length + AddonViewCount;
             }
             for (var i = 0; i < _views.Length; i++) {
                 var position = (index < gap) ? index : index + i - gap;
@@ -1144,7 +1144,7 @@ namespace UIS {
                     height += item + ItemSpacing;
                 }
                 height /= _heights.Count;
-                var fillCount = Mathf.RoundToInt(_container.height / height) + ADDON_VIEWS_COUNT;
+                var fillCount = Mathf.RoundToInt(_container.height / height) + AddonViewCount;
                 _views = new GameObject[fillCount];
                 for (var i = 0; i < fillCount; i++) {
                     clone = Instantiate(Prefab, Vector3.zero, Quaternion.identity);
@@ -1190,7 +1190,7 @@ namespace UIS {
                     width += item + ItemSpacing;
                 }
                 width /= _widths.Count;
-                var fillCount = Mathf.RoundToInt(_container.width / width) + ADDON_VIEWS_COUNT;
+                var fillCount = Mathf.RoundToInt(_container.width / width) + AddonViewCount;
                 _views = new GameObject[fillCount];
                 for (var i = 0; i < fillCount; i++) {
                     clone = Instantiate(Prefab, Vector3.zero, Quaternion.identity);
