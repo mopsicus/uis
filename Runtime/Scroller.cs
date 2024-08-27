@@ -23,11 +23,6 @@ namespace UIS {
     public class Scroller : MonoBehaviour, IDropHandler {
 
         /// <summary>
-        /// Addon count views
-        /// </summary>
-        const int ADDON_VIEWS_COUNT = 4;
-
-        /// <summary>
         /// Velocity for scroll to function
         /// </summary>
         Vector2 SCROLL_VELOCITY = new Vector2(0f, 50f);
@@ -189,6 +184,11 @@ namespace UIS {
         /// Container for calc width/height if anchors exists
         /// </summary>
         public RectTransform ParentContainer = null;
+
+        /// <summary>
+        /// Addon count views
+        /// </summary>
+        public int AddonViewsCount = 4;
 
         [HideInInspector]
         /// <summary>
@@ -537,6 +537,14 @@ namespace UIS {
         /// Handler on scroller
         /// </summary>
         void OnScrollChange(Vector2 vector) {
+            // by https://github.com/webitube
+            // Note: If the scroller position changed but the scroll velocity is exactly zero, the movement was done via a scrollbar. In this case, we need to ScrollTo() the indicated position directly.
+            // Note 2: The normalized scrollbar position is opposite from the ScrollTo() index. This is why the we take (1.0 - pos) instead of pos directly.            
+            if (_scroll.velocity.magnitude == 0.0f) {
+                var pos = (Type == 0) ? vector.y : vector.x;
+                var index = Mathf.RoundToInt(_count * (1.0f - pos));
+                ScrollTo(index);
+            }            
             if (Type == 0) {
                 ScrollChangeVertical();
             } else {
@@ -955,7 +963,7 @@ namespace UIS {
                 index = 0;
             }
             if (index + _views.Length >= _count) {
-                index = _count - _views.Length + ADDON_VIEWS_COUNT;
+                index = _count - _views.Length + AddonViewsCount;
             }
             for (var i = 0; i < _views.Length; i++) {
                 var position = (index < gap) ? index : index + i - gap;
@@ -1144,7 +1152,7 @@ namespace UIS {
                     height += item + ItemSpacing;
                 }
                 height /= _heights.Count;
-                var fillCount = Mathf.RoundToInt(_container.height / height) + ADDON_VIEWS_COUNT;
+                var fillCount = Mathf.RoundToInt(_container.height / height) + AddonViewsCount;
                 _views = new GameObject[fillCount];
                 for (var i = 0; i < fillCount; i++) {
                     clone = Instantiate(Prefab, Vector3.zero, Quaternion.identity);
@@ -1190,7 +1198,7 @@ namespace UIS {
                     width += item + ItemSpacing;
                 }
                 width /= _widths.Count;
-                var fillCount = Mathf.RoundToInt(_container.width / width) + ADDON_VIEWS_COUNT;
+                var fillCount = Mathf.RoundToInt(_container.width / width) + AddonViewsCount;
                 _views = new GameObject[fillCount];
                 for (var i = 0; i < fillCount; i++) {
                     clone = Instantiate(Prefab, Vector3.zero, Quaternion.identity);

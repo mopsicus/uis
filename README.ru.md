@@ -64,7 +64,6 @@ public class Demo : MonoBehaviour {
     [SerializeField]
     Scroller List = null;
 
-    /// </summary>
     void Start() {
         List.OnFill += OnFillItem;
         List.OnHeight += OnHeightItem;

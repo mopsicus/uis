@@ -77,6 +77,8 @@ offsets and pull value for drag
 
 `Parent container` – you can set container size by another game object with RectTransform
 
+`AddonViewsCount` – views count which created on initialization to make gap for scrolling
+
 ## Recycle
 
 UIS doesn't destroy or create list items each time. When you did the first initialization, UIS created the pool of elements and uses them for scrolling. And when you call `Recycle(int index)` or `RecycleAll()`, the items are not destroyed, they are just "hidden" and remain in that state until they are needed again.
