@@ -130,7 +130,6 @@ public class Demo : MonoBehaviour {
 * TON: UQDVp346KxR6XxFeYc3ksZ_jOuYjztg7b4lEs6ulEWYmJb0f
 * Карты Visa, Mastercard через [Boosty](https://boosty.to/mopsicus/donate)
 * Карты МИР через [CloudTips](https://pay.cloudtips.ru/p/9f507669)
-* [Paypal](https://www.paypal.me/mopsicus)
 
 # ✉️ Контактная информация
 
