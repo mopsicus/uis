@@ -965,6 +965,9 @@ namespace UIS {
             if (index + _views.Length >= _count) {
                 index = _count - _views.Length + AddonViewsCount;
             }
+            if (index < 0) {
+                index = 0;
+            }            
             for (var i = 0; i < _views.Length; i++) {
                 var position = (index < gap) ? index : index + i - gap;
                 if (i + 1 > _count || position >= _count) {
