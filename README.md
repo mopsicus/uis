@@ -121,9 +121,9 @@ For a better experience, you can set up an environment for local development. Si
 
 You can support the project by using any of the ways below:
 
-* Bitcoin (BTC): 1VccPXdHeiUofzEj4hPfvVbdnzoKkX8TJ
-* USDT (TRC20): TMHacMp461jHH2SHJQn8VkzCPNEMrFno7m
-* TON: UQDVp346KxR6XxFeYc3ksZ_jOuYjztg7b4lEs6ulEWYmJb0f
+* Bitcoin (BTC): bc1qaejavqm0r2fnx3d6mhvt8r6uqzwzun5vwkryn2
+* USDT (TRC20): TLDPntuWNZRZTiWmtaKvZH7cVFXuf5TQvS
+* TON: UQBrv16QN-6y2Jba0IgoKJEGB4u7_0ilPw8BXDH7M9NnExhw
 * Visa, Mastercard via [Boosty](https://boosty.to/mopsicus/donate)
 * MIR via [CloudTips](https://pay.cloudtips.ru/p/9f507669)
 
